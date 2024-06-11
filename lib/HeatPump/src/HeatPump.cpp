@@ -744,16 +744,15 @@ int HeatPump::readPacket() {
               power += data[6];
               receivedStatus.power = power;
               // Serial.printf("Mystery val 2 : %d\n",mVal2);
+
+              bool isStatusChanged = (currentStatus.operating != receivedStatus.operating)
+		    ||  (currentStatus.compressorFrequency != receivedStatus.compressorFrequency);
               
-              if(statusChangedCallback && 
-                (
-                  (currentStatus.operating != receivedStatus.operating) || 
-                  (currentStatus.compressorFrequency != receivedStatus.compressorFrequency)
-                )
-              ) {
-              	currentStatus.operating = receivedStatus.operating;
-              	currentStatus.compressorFrequency = receivedStatus.compressorFrequency;
-              	currentStatus.power = receivedStatus.power;
+              currentStatus.operating = receivedStatus.operating;
+              currentStatus.compressorFrequency = receivedStatus.compressorFrequency;
+              currentStatus.power = receivedStatus.power;
+		    
+              if (statusChangedCallback && isStatusChanged) {
                 statusChangedCallback(currentStatus);
               }
 
